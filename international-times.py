@@ -17,17 +17,16 @@
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
+import re
 
 def getTimezone(city, country):
     url = 'https://www.timeanddate.com/time/zone/' + str(country) + "/" + str(city)
     response = requests.get(url)
     soup = BeautifulSoup(response.content, "html.parser")
-    test = soup.findAll("table", attrs={"class":"table table--left table--inner-borders-rows"})
-    # test = soup.find("div", class_="wfc")
-    print(test)
-    #all_tables = pd.read_html(url,match='Current Offset')
-    #print(all_tables[0]) #[1][2]
-
+    tableContents = soup.find("table", attrs={"class":"table table--left table--inner-borders-rows"})
+    text = tableContents.text
+    x = re.search(r"\+{0,1}\-{0,1}\d", text).group(0)
+    print(x[0])
     pass
 
 numCities = int(input('How many cities would you like to consider? '))
