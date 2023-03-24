@@ -15,15 +15,18 @@
 
 # from selenium import webdriver
 import pandas as pd
+import requests
+from bs4 import BeautifulSoup
 
 def getTimezone(city, country):
     url = 'https://www.timeanddate.com/time/zone/' + str(country) + "/" + str(city)
-    # response = requests.get(url)
-    # soup = BeautifulSoup(response.text, "html.parser")
-    # test = soup.findAll("table", attrs={"class":"table table--left table--inner-borders-rows"})
-    # print(test)
-    all_tables = pd.read_html(url,match='Current Offset')
-    print(all_tables[0]) #[1][2]
+    response = requests.get(url)
+    soup = BeautifulSoup(response.content, "html.parser")
+    test = soup.findAll("table", attrs={"class":"table table--left table--inner-borders-rows"})
+    # test = soup.find("div", class_="wfc")
+    print(test)
+    #all_tables = pd.read_html(url,match='Current Offset')
+    #print(all_tables[0]) #[1][2]
 
     pass
 
