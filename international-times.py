@@ -19,6 +19,18 @@ import requests
 from bs4 import BeautifulSoup
 import re
 
+def getWorkingHours(offset):
+    idealWorkingHours = []
+    for i in range(24):
+        sum = i+offset
+        if sum > 24:
+            sum -= 24
+        if sum >= 9 and sum < 17:
+            idealWorkingHours.append(1)
+        else:
+            idealWorkingHours.append(0)
+    return idealWorkingHours
+    
 def checkPos(sign):
     if sign == '+':
         return 1
@@ -37,13 +49,18 @@ def getTimezone(city, country):
 numCities = int(input('How many cities would you like to consider? '))
 listCities = []
 listCountries = []
+listTimezones = []
 for i in range(numCities):
     line = 'Enter city # ' + str(i+1) + ": "
     listCities.append(input(line))
     line = 'Enter country # ' + str(i+1) + ": "
     listCountries.append(input(line))
-    print(getTimezone(listCities[i], listCountries[i]))
+    timezone = getTimezone(listCities[i], listCountries[i])
+    listTimezones.append(timezone)
+    print(getWorkingHours(timezone))
+print()
 print(listCities)
+print(listTimezones)
 
 
 
