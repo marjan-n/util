@@ -19,13 +19,18 @@ import requests
 from bs4 import BeautifulSoup
 import re
 
-def getWorkingHours(offset):
+def getWorkingHours(offset, startTime=9, endTime=17):
+    # go through the ideal working hours of one city
+    # and then eliminate if not ideal for other cities
+    # stop once you've gone through all cities
+    # or once you have no more ideal working hours
+
     idealWorkingHours = []
     for i in range(24):
         sum = i+offset
         if sum > 24:
             sum -= 24
-        if sum >= 9 and sum < 17:
+        if sum >= startTime and sum < endTime:
             idealWorkingHours.append(1)
         else:
             idealWorkingHours.append(0)
