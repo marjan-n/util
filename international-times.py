@@ -16,25 +16,28 @@
 # from selenium import webdriver
 import pandas as pd
 
-def getTimezone(city):
-    url = 'https://www.timeanddate.com/time/zone/canada/toronto'
+def getTimezone(city, country):
+    url = 'https://www.timeanddate.com/time/zone/' + str(country) + "/" + str(city)
     # response = requests.get(url)
     # soup = BeautifulSoup(response.text, "html.parser")
     # test = soup.findAll("table", attrs={"class":"table table--left table--inner-borders-rows"})
     # print(test)
     all_tables = pd.read_html(url,match='Current Offset')
-    print(all_tables[0][1][2])
+    print(all_tables[0]) #[1][2]
 
     pass
 
 numCities = int(input('How many cities would you like to consider? '))
 listCities = []
+listCountries = []
 for i in range(numCities):
-    line = 'Enter city # ' + str(i) + ": "
+    line = 'Enter city # ' + str(i+1) + ": "
     listCities.append(input(line))
+    line = 'Enter country # ' + str(i+1) + ": "
+    listCountries.append(input(line))
+    getTimezone(listCities[i], listCountries[i])
 print(listCities)
 
-getTimezone(listCities[0])
 
 
 # create a list of ones and zeros; ones if it's 9 am - 5 p.m.. 24 hour in UTC time.
