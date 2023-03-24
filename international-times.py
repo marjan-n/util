@@ -19,6 +19,11 @@ import requests
 from bs4 import BeautifulSoup
 import re
 
+def checkPos(sign):
+    if sign == '+':
+        return 1
+    return -1
+
 def getTimezone(city, country):
     url = 'https://www.timeanddate.com/time/zone/' + str(country) + "/" + str(city)
     response = requests.get(url)
@@ -26,8 +31,8 @@ def getTimezone(city, country):
     tableContents = soup.find("table", attrs={"class":"table table--left table--inner-borders-rows"})
     text = tableContents.text
     x = re.search(r"\+{0,1}\-{0,1}\d", text).group(0)
-    print(x[0])
-    pass
+    sign = checkPos(x[0])
+    return sign*int(x[1])
 
 numCities = int(input('How many cities would you like to consider? '))
 listCities = []
@@ -37,7 +42,7 @@ for i in range(numCities):
     listCities.append(input(line))
     line = 'Enter country # ' + str(i+1) + ": "
     listCountries.append(input(line))
-    getTimezone(listCities[i], listCountries[i])
+    print(getTimezone(listCities[i], listCountries[i]))
 print(listCities)
 
 
