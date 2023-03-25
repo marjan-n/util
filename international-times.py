@@ -11,6 +11,8 @@
 # 3. additional error and exit handling
 # 4. defining reference city
 # 5. defining working hours instead of default 9 a.m. to 5 p.m.
+# 6. removing spaces from city names. 
+# 7. giving options for countries to standardize naming process. integer menu.
 
 ### Packages
 import pandas as pd
@@ -60,11 +62,14 @@ def translateCommonWorkingHours(referenceTimezoneOffset, commonWorkingHoursBinar
            printTimeIn12Given24(time)
 
 def getWorkingHours(offset, startTime=9, endTime=17):
-    # go through the ideal working hours of one city
-    # and then eliminate if not ideal for other cities
-    # stop once you've gone through all cities
-    # or once you have no more ideal working hours
-
+    """
+    Purpose: determines working hours of a city in the format of 24 element list
+    Inputs: 
+    1. timezone offset (e.g. 9, which would be +9 UTC/GMT)
+    2. start time of working hours in 24-hour clock
+    3. end time of working hours in 24-hour clock (e.g. 17 for 5 p.m.)
+    Outputs: working hours in 24 element list where 0s and 1s rep non-working and working hrs, respectively
+    """
     idealWorkingHours = []
     for i in range(24):
         sum = i+offset
@@ -76,8 +81,19 @@ def getWorkingHours(offset, startTime=9, endTime=17):
     return idealWorkingHours
 
 def getCommonWorkingHours(startingTimezoneHoursBinaryArray, timezoneOffsets, startTime = 9, endTime = 17):
-    
-    # there was only ever 1 city inputted. we have ideal working hours
+    """
+    Purpose: return common working hours across multiple cities
+    Inputs:
+    1. binary array of 24 elements that reps working hours of some reference city
+    2. list of offsets of all cities to be compared (e.g. [9, -4] if 2 cities w/ timezones +9 UTC and -4 UTC)
+    3. start time of working hours in 24-hour clock
+    4. end time of working hours in 24-hour clock (e.g 17 for 5 p.m.)
+    Outputs: common working hours in 24 element list where 0s and 1s rep non-working and working hrs, respectively
+    Logic: 
+    choose a ref city. go through its hours and remove hours that aren't working hours for the other cities.
+    continue until you've gone through all cities or until you've determined that there are 0 common working hours
+    """
+    # there was only ever 1 city inputted. we have common working hours already
     if len(timezoneOffsets) < 2:
         return startingTimezoneHoursBinaryArray
     
@@ -94,11 +110,19 @@ def getCommonWorkingHours(startingTimezoneHoursBinaryArray, timezoneOffsets, sta
     return dummyCopy
     
 def checkPos(sign):
+    """
+    Function that returns 1 if input is '+' and -1 otherwise
+    """
     if sign == '+':
         return 1
     return -1
 
 def getTimezone(city, country):
+    """
+    Purpose: get the UTC/GMT offset given a city and country
+    Inputs: city and country name
+    Outputs: offset in the form of an integer (e.g. -4 returned means UTC/GMT -4 is the offset)
+    """
     url = 'https://www.timeanddate.com/time/zone/' + str(country) + "/" + str(city)
     response = requests.get(url)
     soup = BeautifulSoup(response.content, "html.parser")
@@ -108,6 +132,8 @@ def getTimezone(city, country):
     sign = checkPos(x[0])
     return sign*int(x[1])
 
+
+### Running code
 numCities = int(input('How many cities would you like to consider? '))
 listCities = []
 listCountries = []
@@ -119,18 +145,12 @@ for i in range(numCities):
     listCountries.append(input(line))
     timezone = getTimezone(listCities[i], listCountries[i])
     listTimezones.append(timezone)
-    # print(getWorkingHours(timezone))
 print()
 print(listCities)
 print(listTimezones)
-
 timezoneBinaries0 = getWorkingHours(listTimezones[0], startTime=9, endTime=17)
 commonWorkingHoursBinaries = getCommonWorkingHours(timezoneBinaries0, listTimezones)
 translateCommonWorkingHours(listTimezones[0], commonWorkingHoursBinaries)
 
-
-# create a list of ones and zeros; ones if it's 9 am - 5 p.m.. 24 hour in UTC time.
-# and then look at intersection point of all the cities.
-# at the beginning, define the bounds.
-# and then, define the bound for each city.
-# still need to remove spaces from city names e.g. new york
+### Other ideas
+# Taking a look at the mathematical intersection of working hours across all cities to determine common working hrs
