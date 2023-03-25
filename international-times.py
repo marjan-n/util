@@ -1,19 +1,18 @@
 
-# defining the use case
+### Use Case
+## Inputs
+# 1. enter a bunch of cities and countries
+## Outputs
+# 1. suggested blocks of time that work well across all cities
 
-# Inputs
-# 1. enter a bunch of cities
-# 2. enter the city whose timezone you want the times to be - no. answer in all timezones.
-
-# Outputs
-# 1. suggested blocks of time that work well
-# 2. whether no time will work well
-
-# Extensions
+### Potential Extensions
 # 1. adding scores for times of the day
-# 2. exclusion of certain times
+# 2. exclusion of certain times where there are conflicts
+# 3. additional error and exit handling
+# 4. defining reference city
+# 5. defining working hours instead of default 9 a.m. to 5 p.m.
 
-# from selenium import webdriver
+### Packages
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
@@ -21,10 +20,37 @@ import re
 import numpy as np
 
 def fixTime(time):
+    """
+    Purpose: In case time exceeds 24 hr clock, this function returns time in range (0, 24)
+    Inputs: Time
+    Outputs: Time in range [0, 24]
+    """
     if time > 24:
         time -= 24
         return time
     return time
+
+def printTimeIn12Given24(time):
+    """
+    Purpose: Want numerical time translated to 12-hour clock and a.m. or p.m.
+    Inputs: Time in range [0, 24]
+    Outputs: Time in range [0, 12] and with a.m. or p.m.
+    """
+    if time == 12:
+        print(f'12 p.m.')
+    elif time > 12:
+        print(f'{time-12} p.m.')
+    else:
+        print(f'{time} a.m.')
+
+def translateCommonWorkingHours(referenceTimezoneOffset, commonWorkingHoursBinaries):
+    for i in range(24):
+       # requires translation
+       afterNoon = False
+       if commonWorkingHoursBinaries[i] == 1:
+           time = referenceTimezoneOffset + i
+           time = fixTime(time)
+           printTimeIn12Given24(time)
 
 def getWorkingHours(offset, startTime=9, endTime=17):
     # go through the ideal working hours of one city
@@ -90,21 +116,6 @@ for i in range(numCities):
 print()
 print(listCities)
 print(listTimezones)
-
-def translateCommonWorkingHours(referenceTimezoneOffset, commonWorkingHoursBinaries):
-    for i in range(24):
-       # requires translation
-       afterNoon = False
-       if commonWorkingHoursBinaries[i] == 1:
-           time = referenceTimezoneOffset + i
-           time = fixTime(time)
-           if time == 12:
-               print(f'12 p.m.')
-           elif time > 12:
-               print(f'{time-12} p.m.')
-           else:
-               print(f'{time} a.m.')
-               
 
 timezoneBinaries0 = getWorkingHours(listTimezones[0], startTime=9, endTime=17)
 commonWorkingHoursBinaries = getCommonWorkingHours(timezoneBinaries0, listTimezones)
