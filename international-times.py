@@ -44,6 +44,13 @@ def printTimeIn12Given24(time):
         print(f'{time} a.m.')
 
 def translateCommonWorkingHours(referenceTimezoneOffset, commonWorkingHoursBinaries):
+    """
+    Purpose: printing out the common working hours
+    Inputs: 
+    1. the offset of the reference timezone (e.g. 9, which would be +9 UTC/GMT)
+    2. list of 24 values where 1 if it's a common working hour to all cities, 0 otherwise
+    Outputs: print statement of common working hours in the timezone of the reference city
+    """
     for i in range(24):
        # requires translation
        afterNoon = False
